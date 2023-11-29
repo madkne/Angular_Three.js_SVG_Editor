@@ -1,0 +1,22 @@
+<mat-accordion>
+    <mat-expansion-panel class="toolbox-group" *ngFor="let group of toolbox">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{group.title}}
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <!-- group items -->
+        <mat-selection-list [multiple]="false" color="primary">
+            <mat-list-option *ngFor="let item of group.items" [value]="item" [selected]="item.selected" color="primary"
+                cdkDrag cdkDragBoundary=".example-boundary" (cdkDragEntered)="enteredEvent($event)">
+                <div class="item">
+                    <mat-icon *ngIf="item.icon">{{item.icon}}</mat-icon>
+                    <div class="text">
+                        {{item.title}}
+                    </div>
+                </div>
+            </mat-list-option>
+        </mat-selection-list>
+
+    </mat-expansion-panel>
+</mat-accordion>

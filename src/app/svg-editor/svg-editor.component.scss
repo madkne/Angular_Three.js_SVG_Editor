@@ -1,0 +1,21 @@
+
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    mat-drawer-container {
+        flex: 1 1 0;
+    }
+}
+
+.env {
+    display: flex;
+    padding: 1em;
+    height: calc(100% - 2em);
+    
+    app-svg-editor-workspace {
+        margin-left: 0.6em;
+        flex:  1 1 0;
+        
+    }
+}

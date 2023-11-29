@@ -1,0 +1,13 @@
+
+.toolbox-group {
+    .item {
+        display: flex;
+        align-items: center;
+        .text {
+            padding-left: 1em;
+        }
+    }
+}
+mat-expansion-panel {
+    overflow: visible;
+}
