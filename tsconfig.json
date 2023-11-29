@@ -13,6 +13,9 @@
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
+    "noImplicitAny": false,
+    "allowJs": true,
+    "allowUnreachableCode": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -21,7 +24,10 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@three.js/*": ["src/three.js/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

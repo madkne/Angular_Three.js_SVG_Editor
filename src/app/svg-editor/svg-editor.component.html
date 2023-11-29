@@ -3,22 +3,17 @@
         <button mat-icon-button color="primary" (click)="toggleToolbox()">
             <mat-icon>hardware</mat-icon>
         </button>
-        <button mat-icon-button color="primary" (click)="uploadSvgImage()">
+        <button mat-icon-button color="primary" class="import-file">
+            <input type="file" [accept]="allowedMimeTypes" (change)="uploadSvgImage($event)">
             <mat-icon>add_photo_alternate</mat-icon>
         </button>
         <button mat-icon-button color="warn" (click)="save()">
             <mat-icon>save</mat-icon>
         </button>
     </mat-toolbar>
-    <div cdkDropListGroup class="env">
-        <!-- <mat-drawer-container [hasBackdrop]="false"> -->
-            <!-- <mat-drawer #toolbox mode="push"> -->
-                <app-svg-editor-toolbox></app-svg-editor-toolbox>
-            <!-- </mat-drawer> -->
-            <!-- <mat-drawer-content> -->
-                    <app-svg-editor-workspace></app-svg-editor-workspace>
-            <!-- </mat-drawer-content> -->
-        <!-- </mat-drawer-container> -->
+    <div class="env">
+        <app-svg-editor-toolbox *ngIf="showToolbox"></app-svg-editor-toolbox>
+        <app-svg-editor-workspace></app-svg-editor-workspace>
     </div>
 
 </div>

@@ -1,13 +1,21 @@
-
 .toolbox-group {
-    .item {
-        display: flex;
-        align-items: center;
-        .text {
-            padding-left: 1em;
-        }
+  .item {
+    display: flex;
+    align-items: center;
+    .text {
+      padding-left: 1em;
     }
+  }
 }
 mat-expansion-panel {
-    overflow: visible;
+  overflow: visible;
+}
+
+.dragPreview {
+  position: absolute;
+}
+.no {
+  text-align: center;
+  color: #f97171;
+  padding: 0.5em 0;
 }

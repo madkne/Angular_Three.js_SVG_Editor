@@ -20,6 +20,8 @@ import { SvgEditorToolboxComponent } from './svg-editor/toolbox/toolbox.componen
 import { MatExpansionModule } from '@angular/material/expansion';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SvgEditorWorkspaceComponent } from './svg-editor/workspace/workspace.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+
 
 @NgModule({
   declarations: [
@@ -44,6 +46,7 @@ import { SvgEditorWorkspaceComponent } from './svg-editor/workspace/workspace.co
     MatListModule,
     MatExpansionModule,
     DragDropModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

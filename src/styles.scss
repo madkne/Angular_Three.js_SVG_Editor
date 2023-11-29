@@ -11,3 +11,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-list-text {
     padding: 0 !important;
 }
+
+.error-snack {
+    background-color: rgb(161, 32, 32);
+    color: rgb(221, 210, 210);
+    text-align: center;
+}
