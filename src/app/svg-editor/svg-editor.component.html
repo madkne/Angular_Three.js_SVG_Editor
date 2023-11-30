@@ -7,11 +7,14 @@
             <input type="file" [accept]="allowedMimeTypes" (change)="uploadSvgImage($event)">
             <mat-icon>add_photo_alternate</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="save()">
+        <button mat-icon-button color="primary" (click)="save()">
             <mat-icon>save</mat-icon>
         </button>
+        <button mat-icon-button [color]="editMode ? 'warn' : 'primary'" (click)="toggleEditMode()">
+            <mat-icon>{{editMode ? 'edit_off' :'edit'}}</mat-icon>
+        </button>
     </mat-toolbar>
-    <div class="env">
+    <div class="env" [class.mobile]="env.currentScreenSize === 'mobile'">
         <app-svg-editor-toolbox *ngIf="showToolbox"></app-svg-editor-toolbox>
         <app-svg-editor-workspace></app-svg-editor-workspace>
     </div>

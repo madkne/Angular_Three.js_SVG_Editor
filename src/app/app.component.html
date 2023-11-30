@@ -5,13 +5,17 @@
       <mat-icon>menu</mat-icon>
     </button>
     <span class="spacer"></span>
-    <button mat-icon-button>
-      <mat-icon>menu</mat-icon>
+    <button mat-icon-button (click)="toggleLightMode()">
+      <mat-icon>{{lightMode ? 'nightlight': 'light_mode'}}</mat-icon>
+    </button>
+    <button mat-button  color="accent">
+      <mat-icon>person</mat-icon>
+      John Doe
     </button>
   </mat-toolbar>
 
   <mat-drawer-container [hasBackdrop]="false">
-    <mat-drawer #drawer mode="side">
+    <mat-drawer #drawer [mode]="env.currentScreenSize ==='mobile' ? 'over': 'side'">
       <mat-selection-list #mainMenu [multiple]="false" class="main-drawer" color="primary">
         <mat-list-option *ngFor="let item of mainMenuItems" [value]="item.page" [disabled]="item.disabled"
           [selected]="item.selected" color="primary" (selectedChange)="goToPage(item,$event)">

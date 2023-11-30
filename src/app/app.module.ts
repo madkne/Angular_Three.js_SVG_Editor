@@ -5,6 +5,8 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatInputModule } from '@angular/material/input';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -20,8 +22,12 @@ import { SvgEditorToolboxComponent } from './svg-editor/toolbox/toolbox.componen
 import { MatExpansionModule } from '@angular/material/expansion';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SvgEditorWorkspaceComponent } from './svg-editor/workspace/workspace.component';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SvgEditorEditPropertiesComponent } from './svg-editor/edit-properties/edit-properties.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { FormsModule } from '@angular/forms';
+import { SvgEditorSaveComponent } from './svg-editor/save/save.component';
 
 @NgModule({
   declarations: [
@@ -29,8 +35,11 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     SvgEditorComponent,
     SvgEditorToolboxComponent,
     SvgEditorWorkspaceComponent,
+    SvgEditorEditPropertiesComponent,
+    SvgEditorSaveComponent,
   ],
   imports: [
+    FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -47,6 +56,9 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     MatExpansionModule,
     DragDropModule,
     MatSnackBarModule,
+    MatDialogModule,
+    MatTabsModule,
+    MatInputModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

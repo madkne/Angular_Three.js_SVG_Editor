@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Edit Properties - <code>{{data?.name}}</code></h2>
+<mat-dialog-content class="mat-typography">
+    <ng-container [ngTemplateOutlet]="tabGroup"
+        [ngTemplateOutletContext]="{tabs:data.item.tabProperties}"></ng-container>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button cdkFocusInitial (click)="save()">Save</button>
+</mat-dialog-actions>
+
+<!-- tabs -->
+<ng-template #tabGroup let-tabs="tabs">
+    <mat-tab-group mat-stretch-tabs>
+        <mat-tab [label]="tab.title" *ngFor="let tab of tabs">
+            <div class="tab-details">
+                <!-- sub tabs -->
+                <ng-container *ngIf="tab.subTabs && tab.subTabs.length> 0">
+                    <ng-container [ngTemplateOutlet]="tabGroup"
+                        [ngTemplateOutletContext]="{tabs:tab.subTabs}"></ng-container>
+                </ng-container>
+                <!-- properties -->
+                <ng-container *ngIf="tab.properties && tab.properties.length > 0">
+                    <ng-container *ngFor="let prop of tab.properties" [ngTemplateOutlet]="property"
+                        [ngTemplateOutletContext]="{prop:prop}"></ng-container>
+                </ng-container>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</ng-template>
+
+
+<!-- properties -->
+<ng-template #property let-prop="prop">
+    <!-- text, number, color inputs -->
+    <p>
+        <mat-form-field appearance="outline" *ngIf="['text' , 'number' , 'color'].includes(prop.type)">
+            <mat-label>{{prop.title}}</mat-label>
+            <input matInput [type]="prop.type" [(ngModel)]="prop.value">
+            <mat-hint *ngIf="prop.hint">{{prop.hint}}</mat-hint>
+        </mat-form-field>
+    </p>
+</ng-template>

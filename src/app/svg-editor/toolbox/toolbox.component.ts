@@ -5,8 +5,13 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ToolBoxGroup, ToolBoxItem } from 'src/app/common/interfaces';
+import {
+  DraggedToolboxItemData,
+  ToolBoxGroup,
+  ToolBoxItem,
+} from 'src/app/common/interfaces';
 import { SVGEditorToolbox } from 'src/app/common/svg-editor-toolbox';
+import { TransmitService } from 'src/app/services/transmit.service';
 
 @Component({
   selector: 'app-svg-editor-toolbox',
@@ -18,9 +23,18 @@ export class SvgEditorToolboxComponent implements OnInit, AfterContentInit {
   workspaceBoundaryElement!: HTMLElement;
   draggedItem!: ToolBoxItem | undefined;
 
-  constructor() {}
+  constructor(protected transmit: TransmitService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // =>normalize tools
+    for (const group of this.toolbox) {
+      for (const tool of group.items) {
+        if (!tool.tabProperties && tool.tabPropertiesFunc) {
+          tool.tabProperties = tool.tabPropertiesFunc();
+        }
+      }
+    }
+  }
 
   ngAfterContentInit(): void {
     this.workspaceBoundaryElement = document.getElementById(
@@ -31,7 +45,7 @@ export class SvgEditorToolboxComponent implements OnInit, AfterContentInit {
   startDragItem(event: DragEvent, item: ToolBoxItem) {
     this.draggedItem = item;
     event.dataTransfer?.setDragImage(
-      document.getElementById('svg_toolbox_' + item.title) as HTMLElement,
+      document.getElementById('svg_toolbox_' + item.name) as HTMLElement,
       0,
       0
     );
@@ -41,8 +55,11 @@ export class SvgEditorToolboxComponent implements OnInit, AfterContentInit {
   }
 
   endDragItem(event: DragEvent) {
-    console.log('end', event);
-    //TODO:
+    // console.log('end', event);
+    this.transmit.emit<DraggedToolboxItemData>('dragged-toolbox-item', {
+      event,
+      item: this.draggedItem as ToolBoxItem,
+    });
     this.draggedItem = undefined;
   }
 }

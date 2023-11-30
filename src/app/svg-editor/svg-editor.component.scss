@@ -16,6 +16,12 @@
     margin-left: 0.6em;
     flex: 1 1 0;
   }
+  &.mobile {
+    flex-direction: column;
+    app-svg-editor-toolbox {
+      margin: 1em 0;
+    }
+  }
 }
 
 .import-file {

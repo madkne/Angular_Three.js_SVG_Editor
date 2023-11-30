@@ -1,4 +1,5 @@
-import { PageName } from './types';
+import { PageName, ToolboxItemGeometryType } from './types';
+import * as THREE from 'three';
 
 export interface MenuItem {
   icon: string;
@@ -15,20 +16,46 @@ export interface ToolBoxGroup {
 
 export interface ToolBoxItem {
   title: string;
+  name: string;
+  geometryType: ToolboxItemGeometryType;
   selected?: boolean;
   icon?: string;
+  disabled?: boolean;
   tabProperties?: ToolBoxItemTabProperties[];
+  tabPropertiesFunc?: () => ToolBoxItemTabProperties[];
 }
 
 export interface ToolBoxItemTabProperties {
   title: string;
+  name: string;
   properties?: ToolBoxItemProperty[];
   subTabs?: ToolBoxItemTabProperties[];
 }
 
 export interface ToolBoxItemProperty {
   title: string;
+  hint?: string;
   name: string;
-  type: 'string' | 'number' | 'color';
-  defaultValue?: any;
+  type: 'text' | 'number' | 'color';
+  value?: any;
+}
+
+export interface DraggedToolboxItemData {
+  event: DragEvent;
+  item: ToolBoxItem;
+}
+
+export interface WorkspaceObject {
+  name: string;
+  geometry: THREE.BufferGeometry;
+  material: THREE.MeshBasicMaterial; //THREE.Material;
+  object: THREE.Mesh;
+  item: ToolBoxItem;
+}
+
+export interface WorkspaceObjectItemJson {
+  id?: string;
+  name: string;
+  geometry_type: ToolboxItemGeometryType;
+  properties: {};
 }
