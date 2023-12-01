@@ -18,8 +18,8 @@ import {
   WorkspaceObject,
   WorkspaceObjectItemJson,
 } from 'src/app/common/interfaces';
-import { SVGEditorToolboxHelper } from 'src/app/common/svg-editor-toolbox';
-import { clone } from 'src/app/common/public';
+import { SVGEditorHelper } from 'src/app/common/svg-editor-helper';
+import { clone, loadTexture } from 'src/app/common/public';
 import { TextGeometry } from '@three.js/geometries/TextGeometry.js';
 
 @Component({
@@ -33,7 +33,7 @@ export class SvgEditorWorkspaceComponent
   @ViewChild('workspaceBoundaryCanvas')
   canvasRef!: ElementRef<HTMLCanvasElement>;
   notifier = new Subject<void>();
-  renderer!: THREE.WebGLRenderer; // SVGRenderer; //;
+  renderer!: THREE.WebGLRenderer;
   width = window.innerWidth;
   height = window.innerHeight;
   camera!: THREE.PerspectiveCamera;
@@ -102,7 +102,7 @@ export class SvgEditorWorkspaceComponent
         this.scene.remove(this.workspaceObjects[workspaceObjectIndex].object);
         // =>update object
         this.workspaceObjects[workspaceObjectIndex].item = object.item;
-        await SVGEditorToolboxHelper.itemPropertiesTo3DObjectConvertor(
+        await SVGEditorHelper.itemPropertiesTo3DObjectConvertor(
           this.workspaceObjects[workspaceObjectIndex]
         );
 
@@ -160,8 +160,8 @@ export class SvgEditorWorkspaceComponent
       item: clone<ToolBoxItem>(item.item),
       name: objectName,
     };
-    SVGEditorToolboxHelper.setObjectPositionToItemProperties(workspaceObject);
-    await SVGEditorToolboxHelper.itemPropertiesTo3DObjectConvertor(
+    SVGEditorHelper.setObjectPositionToItemProperties(workspaceObject);
+    await SVGEditorHelper.itemPropertiesTo3DObjectConvertor(
       workspaceObject
     );
     this.workspaceObjects.push(workspaceObject);
@@ -235,11 +235,7 @@ export class SvgEditorWorkspaceComponent
     this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     this.pointer.y = -(((event.clientY - rect.top) / rect.height) * 2) + 1;
 
-    // Get real world 3d point
-    // this.worldPoint.x = this.pointer.x;
-    // this.worldPoint.y = this.pointer.y;
-    // this.worldPoint.z = 0;
-    // this.worldPoint = this.worldPoint.unproject(this.camera);
+    // =>Get real world 3d point
     this._vec.set(
       (event.clientX / window.innerWidth) * 2 - 1,
       -(event.clientY / window.innerHeight) * 2 + 1,
@@ -266,8 +262,6 @@ export class SvgEditorWorkspaceComponent
   }
 
   onWindowResize() {
-    // this.canvas.style.width = '100%';
-    // this.canvas.style.height = '100%';
     this.width = this.canvas.offsetWidth;
     this.height = this.canvas.offsetHeight;
     if (this.camera) {
@@ -411,50 +405,11 @@ export class SvgEditorWorkspaceComponent
     this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
   }
 
-  private _loadTexture(textureFilename: string) {
-    return new Promise<THREE.Texture>(resolve => {
-      fetch(textureFilename)
-        .then(response => {
-          // Create a blob from the data
-          response
-            .blob()
-            .then(blob => {
-              // Read blob uri
-              const reader = new FileReader();
-
-              reader.onloadend = () => {
-                const dataUrl = reader.result as string;
-
-                // Load the textue to three js
-                const loader = new THREE.TextureLoader();
-                loader.loadAsync(dataUrl).then(texture => {
-                  // mesh.material.map = texture;
-                  // Threejs transforms SVG files as PNGs in the scene and we need the
-                  // raw data to send it to the SVG renderer, so we save it.
-                  texture['sourceFile'] = dataUrl;
-                  texture.name = textureFilename;
-                  // mesh.material.needsUpdate = true;
-                  resolve(texture);
-                });
-              };
-
-              reader.readAsDataURL(blob);
-            })
-            .catch(() => {
-              console.error('Could create blob from data', response);
-            });
-        })
-        .catch(() => {
-          console.error('Could not fetch texture', textureFilename);
-        });
-    });
-  }
-
   private _saveWorkspaceObjectsJson() {
     this.env.svgEditorObjectsJson = [];
     for (const obj of this.workspaceObjects) {
       this.env.svgEditorObjectsJson.push(
-        SVGEditorToolboxHelper.item2JSON(obj.item, obj.name)
+        SVGEditorHelper.item2JSON(obj.item, obj.name)
       );
     }
   }
@@ -463,7 +418,7 @@ export class SvgEditorWorkspaceComponent
     this.scene.clear();
     const geometry = new THREE.PlaneGeometry(100, 100, 10);
 
-    const texture = await this._loadTexture(svgUrl);
+    const texture = await loadTexture(svgUrl);
 
     let mat = new THREE.MeshBasicMaterial({
       // color: 0xffff00,
