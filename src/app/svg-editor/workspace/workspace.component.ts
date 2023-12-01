@@ -285,7 +285,6 @@ export class SvgEditorWorkspaceComponent
     // =>if edit mode, hover an object
     if (this.mode === 'edit') {
       // find intersections
-
       this.mouseRaycaster.setFromCamera(this.pointer, this.camera);
 
       const intersects = this.mouseRaycaster.intersectObjects(
@@ -293,6 +292,7 @@ export class SvgEditorWorkspaceComponent
         false
       );
       if (intersects.length > 0) {
+        this.canvas.style.cursor = 'pointer'
         // console.log('intersects', intersects);
         // =>reset
         if (this.selectedWorkspaceObjectIndex > -1) {
@@ -314,6 +314,8 @@ export class SvgEditorWorkspaceComponent
           SvgEditorWorkspaceComponent.SELECT_OBJECT_COLOR
         );
       } else if (this.selectedWorkspaceObjectIndex > -1) {
+        this.canvas.style.cursor = 'default'
+
         this._resetSelectedObject();
       }
     }

@@ -26,6 +26,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SvgEditorEditPropertiesComponent } from './svg-editor/edit-properties/edit-properties.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { SvgEditorSaveComponent } from './svg-editor/save/save.component';
 
@@ -59,6 +60,7 @@ import { SvgEditorSaveComponent } from './svg-editor/save/save.component';
     MatDialogModule,
     MatTabsModule,
     MatInputModule,
+    MatTooltipModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

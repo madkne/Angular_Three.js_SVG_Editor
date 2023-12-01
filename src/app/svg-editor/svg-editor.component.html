@@ -3,14 +3,14 @@
         <button mat-icon-button color="primary" (click)="toggleToolbox()">
             <mat-icon>hardware</mat-icon>
         </button>
-        <button mat-icon-button color="primary" class="import-file">
+        <button mat-icon-button color="primary" class="import-file" matTooltip="Import SVG file">
             <input type="file" [accept]="allowedMimeTypes" (change)="uploadSvgImage($event)">
             <mat-icon>add_photo_alternate</mat-icon>
         </button>
         <button mat-icon-button color="primary" (click)="save()">
             <mat-icon>save</mat-icon>
         </button>
-        <button mat-icon-button [color]="editMode ? 'warn' : 'primary'" (click)="toggleEditMode()">
+        <button mat-icon-button matTooltip="Edit Objects" [color]="editMode ? 'warn' : 'primary'" (click)="toggleEditMode()">
             <mat-icon>{{editMode ? 'edit_off' :'edit'}}</mat-icon>
         </button>
     </mat-toolbar>
