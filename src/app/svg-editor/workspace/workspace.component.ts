@@ -120,6 +120,8 @@ export class SvgEditorWorkspaceComponent
   }
 
   async loadAndRenderToolboxItem(item: DraggedToolboxItemData) {
+    console.log(item);
+    // this.onMouseMove(item.event);
     let itemGeometry!: THREE.BufferGeometry;
     const objectName = item.item.name + '_' + Math.ceil(Math.random() * 10000);
     // =>create geometry by type
@@ -161,9 +163,7 @@ export class SvgEditorWorkspaceComponent
       name: objectName,
     };
     SVGEditorHelper.setObjectPositionToItemProperties(workspaceObject);
-    await SVGEditorHelper.itemPropertiesTo3DObjectConvertor(
-      workspaceObject
-    );
+    await SVGEditorHelper.itemPropertiesTo3DObjectConvertor(workspaceObject);
     this.workspaceObjects.push(workspaceObject);
 
     this.scene.add(itemGeometryMesh);
@@ -228,25 +228,26 @@ export class SvgEditorWorkspaceComponent
     }
   }
 
-  onMouseMove(event: MouseEvent) {
+  onMouseMove(event: MouseEvent, dragging = false) {
     // Relative screen position
     // (WebGL is -1 to 1 left to right, 1 to -1 top to bottom)
     const rect = this.canvas.getBoundingClientRect();
-    this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    this.pointer.y = -(((event.clientY - rect.top) / rect.height) * 2) + 1;
+    this.pointer.setX(((event.clientX - rect.left) / rect.width) * 2 - 1);
+    this.pointer.setY(-(((event.clientY - rect.top) / rect.height) * 2) + 1);
 
     // =>Get real world 3d point
     this._vec.set(
-      (event.clientX / window.innerWidth) * 2 - 1,
-      -(event.clientY / window.innerHeight) * 2 + 1,
+      (event.clientX / (dragging ? window.outerWidth : this.width)) * 2 - 1,
+      -(event.clientY / (dragging ? window.outerHeight : this.height)) * 2 + 1,
       0.5
     );
     this._vec.unproject(this.camera);
     this._vec.sub(this.camera.position).normalize();
-    var distance = -this.camera.position.z / this._vec.z;
+    const distance = -this.camera.position.z / this._vec.z;
     this.worldPoint
       .copy(this.camera.position)
       .add(this._vec.multiplyScalar(distance));
+    // console.log(this.worldPoint, event);
   }
 
   onMouseDown(event: MouseEvent) {
@@ -271,7 +272,6 @@ export class SvgEditorWorkspaceComponent
     if (this.renderer) {
       this.renderer.setSize(this.width, this.height);
     }
-
   }
 
   animate() {
@@ -292,7 +292,7 @@ export class SvgEditorWorkspaceComponent
         false
       );
       if (intersects.length > 0) {
-        this.canvas.style.cursor = 'pointer'
+        this.canvas.style.cursor = 'pointer';
         // console.log('intersects', intersects);
         // =>reset
         if (this.selectedWorkspaceObjectIndex > -1) {
@@ -314,7 +314,7 @@ export class SvgEditorWorkspaceComponent
           SvgEditorWorkspaceComponent.SELECT_OBJECT_COLOR
         );
       } else if (this.selectedWorkspaceObjectIndex > -1) {
-        this.canvas.style.cursor = 'default'
+        this.canvas.style.cursor = 'default';
 
         this._resetSelectedObject();
       }
@@ -405,6 +405,7 @@ export class SvgEditorWorkspaceComponent
     window.addEventListener('resize', this.onWindowResize.bind(this));
     this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
     this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+    this.canvas.addEventListener('dragover', e => this.onMouseMove(e, true));
   }
 
   private _saveWorkspaceObjectsJson() {
