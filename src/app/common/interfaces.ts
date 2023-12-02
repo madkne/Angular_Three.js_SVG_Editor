@@ -51,6 +51,8 @@ export interface WorkspaceObject {
   material: THREE.MeshBasicMaterial; //THREE.Material;
   object: THREE.Mesh;
   item: ToolBoxItem;
+
+  _currentColor?: string;
 }
 
 export interface WorkspaceObjectItemJson {
@@ -58,4 +60,11 @@ export interface WorkspaceObjectItemJson {
   name: string;
   geometry_type: ToolboxItemGeometryType;
   properties: {};
+}
+
+
+export interface ObjectDragEvent {
+type: 'dragend' | 'drag';
+object: THREE.Mesh;
+target: any;
 }

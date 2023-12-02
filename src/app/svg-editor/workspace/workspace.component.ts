@@ -14,6 +14,7 @@ import { EnvironmentService } from 'src/app/services/environment.service';
 import { OrbitControls } from '@three.js/controls/OrbitControls.js';
 import {
   DraggedToolboxItemData,
+  ObjectDragEvent,
   ToolBoxItem,
   WorkspaceObject,
   WorkspaceObjectItemJson,
@@ -21,6 +22,7 @@ import {
 import { SVGEditorHelper } from 'src/app/common/svg-editor-helper';
 import { clone, loadTexture } from 'src/app/common/public';
 import { TextGeometry } from '@three.js/geometries/TextGeometry.js';
+import { DragControls } from '@three.js/controls/DragControls.js';
 
 @Component({
   selector: 'app-svg-editor-workspace',
@@ -39,7 +41,8 @@ export class SvgEditorWorkspaceComponent
   camera!: THREE.PerspectiveCamera;
   scene!: THREE.Scene;
   loader!: SVGLoader;
-  controls!: OrbitControls;
+  cameraControls!: OrbitControls;
+  dragControls!: DragControls;
   baseImageZPosition = 5;
   pointer = new THREE.Vector2();
   worldPoint = new THREE.Vector3();
@@ -217,6 +220,24 @@ export class SvgEditorWorkspaceComponent
       // this.grids.push(gridYZ);
 
       this.mouseRaycaster = new THREE.Raycaster();
+
+      // =>enable dragging object
+      this.dragControls = new DragControls(
+        this.workspaceObjects.map(i => i.object),
+        this.camera,
+        this.renderer.domElement
+      );
+      this.dragControls.addEventListener(
+        'drag',
+        this.onDraggingObject.bind(this)
+      );
+      this.dragControls.addEventListener(
+        'dragend',
+        this.onDragEndObject.bind(this)
+      );
+      this.canvas.style.cursor = 'all-scroll';
+      // =>disable orbit controls
+      this.cameraControls.enabled = false;
     } else {
       // =>remove grids
       for (const grid of this.grids) {
@@ -225,7 +246,26 @@ export class SvgEditorWorkspaceComponent
       this.grids = [];
       // =>restore selected object
       this._resetSelectedObject();
+      // =>enable orbit controls
+      this.cameraControls.enabled = true;
     }
+  }
+
+  onDragEndObject(event: ObjectDragEvent) {
+    this.canvas.style.cursor = 'default';
+    // =>find object by name
+    const objectIndex = this.workspaceObjects.findIndex(
+      i => i.object.name === event.object.name
+    );
+    if (objectIndex < 0) {
+      console.warn('bad object dragged');
+      return;
+    }
+    // =>update selected object position
+    SVGEditorHelper.setObjectPositionToItemProperties(
+      this.workspaceObjects[objectIndex]
+    );
+    this._saveWorkspaceObjectsJson();
   }
 
   onMouseMove(event: MouseEvent, dragging = false) {
@@ -250,7 +290,7 @@ export class SvgEditorWorkspaceComponent
     // console.log(this.worldPoint, event);
   }
 
-  onMouseDown(event: MouseEvent) {
+  onDbClick(event: MouseEvent) {
     console.log('pointer:', this.pointer, this.worldPoint);
 
     // =>if edit mode
@@ -274,10 +314,14 @@ export class SvgEditorWorkspaceComponent
     }
   }
 
+  onDraggingObject(event: ObjectDragEvent) {
+    this.render();
+  }
+
   animate() {
     window.requestAnimationFrame(this.animate.bind(this));
-    if (this.controls) {
-      this.controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+    if (this.cameraControls) {
+      this.cameraControls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
     }
 
     this.render();
@@ -302,9 +346,7 @@ export class SvgEditorWorkspaceComponent
           i => i.object.name === intersects[0].object.name
         );
         // =>find index
-        this.workspaceObjects[this.selectedWorkspaceObjectIndex][
-          'currentColor'
-        ] =
+        this.workspaceObjects[this.selectedWorkspaceObjectIndex]._currentColor =
           this.workspaceObjects[
             this.selectedWorkspaceObjectIndex
           ].material.color.getStyle();
@@ -314,8 +356,6 @@ export class SvgEditorWorkspaceComponent
           SvgEditorWorkspaceComponent.SELECT_OBJECT_COLOR
         );
       } else if (this.selectedWorkspaceObjectIndex > -1) {
-        this.canvas.style.cursor = 'default';
-
         this._resetSelectedObject();
       }
     }
@@ -337,11 +377,12 @@ export class SvgEditorWorkspaceComponent
   /************************************** */
   /************************************** */
   private _resetSelectedObject() {
+    this.canvas.style.cursor = 'default';
     if (this.selectedWorkspaceObjectIndex > -1) {
       this.workspaceObjects[
         this.selectedWorkspaceObjectIndex
       ].material.color.setStyle(
-        this.workspaceObjects[this.selectedWorkspaceObjectIndex]['currentColor']
+        this.workspaceObjects[this.selectedWorkspaceObjectIndex]._currentColor!
       );
     }
 
@@ -373,23 +414,26 @@ export class SvgEditorWorkspaceComponent
 
     this.renderer.render(this.scene, this.camera);
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.listenToKeyEvents(window);
-    this.controls.addEventListener('change', e => {
+    this.cameraControls = new OrbitControls(
+      this.camera,
+      this.renderer.domElement
+    );
+    this.cameraControls.listenToKeyEvents(window);
+    this.cameraControls.addEventListener('change', e => {
       // console.log('control change', e, this.camera.position);
     });
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.05;
+    this.cameraControls.enableDamping = true;
+    this.cameraControls.dampingFactor = 0.05;
 
-    this.controls.screenSpacePanning = false;
-    this.controls.autoRotate = false;
+    this.cameraControls.screenSpacePanning = false;
+    this.cameraControls.autoRotate = false;
 
-    this.controls.minDistance = 2;
-    this.controls.maxDistance = 500;
-    this.controls.maxPolarAngle = Math.PI / 2;
+    this.cameraControls.minDistance = 2;
+    this.cameraControls.maxDistance = 500;
+    this.cameraControls.maxPolarAngle = Math.PI / 2;
 
     this.camera.position.set(2, 3, 80);
-    this.controls.update();
+    this.cameraControls.update();
   }
 
   private _initScene() {
@@ -404,7 +448,7 @@ export class SvgEditorWorkspaceComponent
   private _initEvents() {
     window.addEventListener('resize', this.onWindowResize.bind(this));
     this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
-    this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+    this.canvas.addEventListener('dblclick', this.onDbClick.bind(this));
     this.canvas.addEventListener('dragover', e => this.onMouseMove(e, true));
   }
 
